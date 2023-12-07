@@ -8,9 +8,18 @@ const io = require('socket.io')(http);
 
 app.use(require('./routes/streaming.routes'));
 
-app.use(express.static(__dirname + "/public"));
+// Establece la ruta para elementos estáticos
+app.use(express.static('src/public'));
+
+
+io.on('connection', (socket) => {
+
+    socket.on('stream', (image) => {
+
+        socket.broadcast.emit('stream', image);
+
+    })
+
+})
 
 module.exports = http;
-
-// app.get('/', (req, res) => { res.send('Hello!') }); 
-// const port = process.env.PORT || 3000
