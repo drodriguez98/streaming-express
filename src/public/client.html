@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Script de Socket.IO para la comunicación del cliente con el servidor -->
+    <script src="/socket.io/socket.io.js"></script>
+    <title>Client</title>
+</head>
+<body>
+    <!-- Contenido HTML -->
+    <h1>Emisión en directo</h1>
+    <img id="play" src="" alt="">
+
+    <script>
+        // JavaScript para recibir la transmisión en directo
+        const socket = io(); // Establece la conexión con el servidor utilizando Socket.IO
+
+        socket.on('stream', (image) => {
+            // Recibe la imagen del servidor y la muestra en un elemento img
+            let img = document.getElementById('play');
+            img.src = image;
+        });
+    </script>
+</body>
+</html>

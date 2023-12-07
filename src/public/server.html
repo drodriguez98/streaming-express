@@ -3,11 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Script de Socket.IO para la comunicación del cliente con el servidor -->
+    <script src="/socket.io/socket.io.js"></script>
     <title>Server</title>
+    <style>
+
+        h1, button { margin: 45px auto; }
+
+        body { 
+            display: flex; 
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        video {
+            width: 800px;
+            height: 600px;
+            margin: 30px auto;
+        }
+
+        button {
+            width: 15%;
+        }
+
+    </style>
 </head>
 <body>
-
+    <!-- Contenido HTML -->
     <h1>Emisión en directo</h1>
+    <video src="" id="video" autoplay="true"></video>
+    <canvas id="preview"></canvas>
+    <div class="status"></div>
     
+    <!-- Botones para iniciar y detener la emisión -->
+    <button id="startBtn" onclick="startStream()">Iniciar Emisión</button>
+    <button id="stopBtn" onclick="stopStream()" style="display: none;">Detener Emisión</button>
+
+    <script>
+        // JavaScript para manejar la emisión en directo
+        const canvas = document.querySelector('#preview');
+        const context = canvas.getContext('2d');
+        const video = document.querySelector('#video');
+        const socket = io(); // Establece la conexión con el servidor utilizando Socket.IO
+        let interval;
+
+        canvas.style.display = 'none';
+        canvas.width = 512;
+        canvas.height = 384;
+        context.width = canvas.width;
+        context.height = canvas.height;
+
+        function sendMessage(msg) {
+            document.querySelector('.status').innerText = msg;
+        }
+
+        function loadCamera(stream) { video.srcObject = stream; }
+
+        function errorCamera() { sendMessage('No se pudo iniciar la cámara'); }
+
+        function showVideo(video, context) {
+            context.drawImage(video, 0, 0, context.width, context.height);
+            socket.emit('stream', canvas.toDataURL('image/webp'));
+        }
+
+        function startStream() {
+            navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia ||
+                navigator.mozGetUserMedia || navigator.msgGetUserMedia);
+
+            if (navigator.getUserMedia) {
+                navigator.getUserMedia({ video: true }, loadCamera, errorCamera);
+            }
+
+            interval = setInterval(() => {
+                showVideo(video, context);
+            }, 100);
+
+            // Ocultar botón de inicio y mostrar botón de detener
+            document.getElementById('startBtn').style.display = 'none';
+            document.getElementById('stopBtn').style.display = 'block';
+        }
+
+        function stopStream() {
+            clearInterval(interval); // Detener la transmisión
+            socket.emit('stopStream'); // Notificar al servidor para detener la transmisión
+
+            // Ocultar botón de detener y mostrar botón de inicio
+            document.getElementById('stopBtn').style.display = 'none';
+            document.getElementById('startBtn').style.display = 'block';
+
+        }
+    </script>
 </body>
 </html>
