@@ -25,9 +25,6 @@ io.on('connection', (socket) => {
     socket.on('stream', (image) => {
         socket.broadcast.emit('stream', image);
     });
-
-    // Aquí puedes manejar otros eventos del socket si es necesario
-    // socket.on('otroEvento', (data) => { ... });
 });
 
 // Exporta el servidor HTTP para ser utilizado en otros archivos
