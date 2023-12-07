@@ -1,5 +1,5 @@
 // Importa el módulo Router de Express
-const { Router } = require('express');
+import { Router } from 'express';
 
 // Crea una instancia de Router
 const router = Router();
@@ -10,4 +10,4 @@ router.get('/', (req, res) => {
 });
 
 // Exporta las rutas para ser utilizadas en otros archivos
-module.exports = router;
+export default router;
